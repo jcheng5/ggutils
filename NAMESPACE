@@ -2,5 +2,6 @@
 
 export(ggbrush)
 export(gghover)
+export(gglinked)
 import(ggplot2)
 import(shiny)
