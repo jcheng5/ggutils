@@ -30,7 +30,7 @@ gglinked <- function(df, ...) {
 
     tags$div(class = sprintf("plotdiv plotdiv-%d-%d", nplots, n),
       plotOutput(paste0("plot", n), height = "100%",
-        brush = brushOpts("brush", direction = dimensions)
+        brush = brushOpts("brush", direction = dimensions, fill = "transparent")
       )
     )
   })
