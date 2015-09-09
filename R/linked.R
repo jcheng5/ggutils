@@ -13,7 +13,7 @@
 #' gglinked(
 #'   mpg,
 #'   ggplot(, aes(cyl, cty)) + geom_point(aes(color = selected_)),
-#'   ggplot(, aes(class, cty)) + geom_point(aes(color = selected_))
+#'   ggplot(, aes(displ, cty)) + geom_point(aes(color = selected_))
 #' )
 #' }
 #'
@@ -65,27 +65,19 @@ gglinked <- function(df, ...) {
   ))
 
   server <- function(input, output, session) {
-    v <- reactiveValues(activeBrush = NULL)
-
-    observe({
-      if (!is.null(input$brush)) {
-        v$activeBrush <- input$brush
-      }
-    })
-
     fortified <- reactive({
-      if (is.null(v$activeBrush)) {
+      if (is.null(input$brush)) {
         cbind(df, selected_ = FALSE)
       } else {
-        brushedPoints(df, v$activeBrush, allRows = TRUE)
+        brushedPoints(df, input$brush, allRows = TRUE)
       }
     })
 
     observeEvent(input$done, {
-      if (is.null(v$activeBrush)) {
+      if (is.null(input$brush)) {
         stopApp(df)
       } else {
-        stopApp(brushedPoints(df, v$activeBrush))
+        stopApp(brushedPoints(df, input$brush))
       }
     })
 
@@ -93,8 +85,8 @@ gglinked <- function(df, ...) {
       output[[paste0("plot", n)]] <- renderPlot({
         df2 <- fortified()
         (plots[[n]]
-          + scale_color_manual(values = c("black", "red"), guide = FALSE)
-          + scale_fill_manual(values = c("black", "red"), guide = FALSE)) %+% df2
+          + scale_color_manual(values = c("black", "#66D65C"), guide = FALSE)
+          + scale_fill_manual(values = c("black", "#66D65C"), guide = FALSE)) %+% df2
       })
     })
   }
