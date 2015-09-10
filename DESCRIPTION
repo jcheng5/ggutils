@@ -1,10 +1,11 @@
 Package: ggutils
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Demo of Shiny gadgets using ggplot2
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Authors@R: c(person("Joe", "Cheng", role = c("aut", "cre"), email = "joe@rstudio.com"))
+Maintainer: Joe Cheng <joe@rstudio.com>
+Description: Interactive tools for working with ggplots: hover identification,
+    subsetting, linked brushing, exclusion.
+License: GPL-3
 LazyData: TRUE
-Imports: ggplot2, shiny
+Imports: ggplot2, shiny (>= 0.12.2.9003)

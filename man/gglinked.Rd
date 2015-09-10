@@ -22,7 +22,7 @@ gglinked(
 gglinked(
   mpg,
   ggplot(, aes(cyl, cty)) + geom_point(aes(color = selected_)),
-  ggplot(, aes(class, cty)) + geom_point(aes(color = selected_))
+  ggplot(, aes(displ, cty)) + geom_point(aes(color = selected_))
 )
 }
 }
