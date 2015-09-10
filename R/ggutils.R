@@ -27,7 +27,13 @@ gghover <- function(plotExpr) {
       if (is.null(near()) || nrow(near()) == 0)
         return("")
 
-      paste0(names(cars), ": ", unlist(near()), collapse = ", ")
+      nearest <- near()
+
+      name <- row.names(nearest)
+      values <- paste0(names(nearest), ": ", sapply(nearest, as.character), collapse = ", ")
+      paste0(
+        name, ". ", values
+      )
     })
 
     # When the Done button is clicked, return the brushed
@@ -42,16 +48,15 @@ gghover <- function(plotExpr) {
 
 #' Brush ggplot2
 #'
-#' Call ggbrush with a ggplot2 object, and the dimensions which
-#' should be brushed (try "xy" for scatter, "x" for histogram).
-#' The plot will show in RStudio Viewer or your web browser, and
-#' any observations selected by the user will be returned.
+#' Call ggbrush with a ggplot2 object. The plot will show in RStudio Viewer or
+#' your web browser, and any observations selected by the user will be returned.
 #' @export
-ggbrush <- function(plotExpr, direction = c("xy", "x", "y")) {
+ggbrush <- function(plotExpr) {
+  dimensions <- paste(intersect(c("x", "y"), names(plotExpr$mapping)), collapse = "")
 
   # See below for definition of dialogPage function
   ui <- dialogPage(
-    plotOutput("plot", brush = brushOpts(id = "brush", direction = direction),
+    plotOutput("plot", brush = brushOpts(id = "brush", direction = dimensions),
       width = "100%", height = "100%" # Fill the dialog
     )
   )
@@ -106,6 +111,7 @@ dialogPage <- function(outputControl, statusbarHeight = 40,
         position: absolute; bottom: 0px; left: 0px; right: 0px;
         padding: 10px 10px 0 10px;
         background-color: #444; color: white;
+        overflow: hidden;
       }"
     ),
     tags$div(id = "dialogMainOutput",
