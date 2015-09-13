@@ -2,6 +2,85 @@
 NULL
 
 #' @export
+ggzoom <- function(plotExpr) {
+  dimensions <- paste(intersect(c("x", "y"), names(plotExpr$mapping)), collapse = "")
+
+  # See below for definition of dialogPage function
+  ui <- dialogPage(
+    plotOutput("plot", height = "100%", # Fill the dialog
+      brush = brushOpts(id = "brush", direction = dimensions,
+        resetOnNew = TRUE
+      )
+    ),
+    statusbar = actionButton("reset", "Unzoom", class = "btn-xs")
+  )
+
+  server <- function(input, output, session) {
+    v <- reactiveValues(bounds = NULL)
+
+    # Show the plot... that's important.
+    output$plot <- renderPlot({
+      p <- plotExpr
+      if (!is.null(v$bounds)) {
+        if (!is.null(v$bounds$x)) {
+          p <- p + scale_x_continuous(limits = v$bounds$x)
+        }
+        if (!is.null(v$bounds$y)) {
+          p <- p + scale_y_continuous(limits = v$bounds$y)
+        }
+      }
+      p
+    })
+
+    observeEvent(input$brush, {
+      bounds <- NULL
+      if (!is.null(input$brush$xmin)) {
+        bounds <- c(bounds, list(x = c(input$brush$xmin, input$brush$xmax)))
+      }
+      if (!is.null(input$brush$ymin)) {
+        bounds <- c(bounds, list(y = c(input$brush$ymin, input$brush$ymax)))
+      }
+      v$bounds <- bounds
+    })
+
+    observeEvent(input$reset, {
+      v$bounds <- NULL
+    })
+
+    # The part of the data frame that is currently brushed (or
+    # NULL if no brush is active)
+    brushed <- reactive({
+      str(input$brush)
+      if (is.null(input$brush))
+        return(NULL)
+      else
+        brushedPoints(plotExpr$data, input$brush)
+    })
+
+    # Show a message giving instructions, or showing how many
+    # rows are selected
+    output$msg <- renderText({
+      if (is.null(brushed()))
+        return("Click and drag to select, then press Done \u27f6")
+
+      count <- nrow(brushed())
+      sprintf("%d %s selected",
+        count,
+        ifelse(count == 1, "observation", "observations")
+      )
+    })
+
+    # When the Done button is clicked, return the brushed
+    # rows to the caller.
+    observeEvent(input$done, {
+      stopApp(input$brush)
+    })
+  }
+
+  runApp(shinyApp(ui, server), launch.browser = getOption("viewer", TRUE))
+}
+
+#' @export
 gghover <- function(plotExpr) {
   # See below for definition of dialogPage function
   ui <- dialogPage(

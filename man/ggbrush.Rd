@@ -4,12 +4,10 @@
 \alias{ggbrush}
 \title{Brush ggplot2}
 \usage{
-ggbrush(plotExpr, direction = c("xy", "x", "y"))
+ggbrush(plotExpr)
 }
 \description{
-Call ggbrush with a ggplot2 object, and the dimensions which
-should be brushed (try "xy" for scatter, "x" for histogram).
-The plot will show in RStudio Viewer or your web browser, and
-any observations selected by the user will be returned.
+Call ggbrush with a ggplot2 object. The plot will show in RStudio Viewer or
+your web browser, and any observations selected by the user will be returned.
 }
 

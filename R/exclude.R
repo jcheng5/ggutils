@@ -5,10 +5,10 @@ ggexclude <- function(df, plotExpr) {
     plotOutput("plot", height = "100%",
       brush = brushOpts("brush", resetOnNew = TRUE)
     ),
-    statusbar = actionButton("undo", "Undo"),
+    statusbar = actionButton("undo", "Undo", class = "btn-xs"),
     buttons = list(
-      actionButton("reset", "Reset"),
-      actionButton("done", "Done", class = "btn-primary")
+      actionButton("reset", "Reset", class = "btn-xs"),
+      actionButton("done", "Done", class = "btn-primary btn-xs")
     )
   )
 
