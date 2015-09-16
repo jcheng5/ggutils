@@ -1,6 +1,23 @@
 #' @import ggplot2 shiny
 NULL
 
+#' Zoom in on ggplots
+#'
+#' Zoom in on a ggplot object by dragging a selection with the mouse.
+#'
+#' @param plotExpr A ggplot2 plot object
+#' @return The final zoom bounds (or \code{NULL} if unzoomed)
+#'
+#' @examples
+#' \donttest{
+#' library(ggplot2)
+#' p <- ggplot(cars, aes(speed, dist)) + geom_point()
+#' ggzoom(p)
+#'
+#' # Also works for one-dimensional visualizations
+#' p2 <- ggplot(cars, aes(dist)) + geom_histogram()
+#' gzoom(p2)
+#' }
 #' @export
 ggzoom <- function(plotExpr) {
   dimensions <- paste(intersect(c("x", "y"), names(plotExpr$mapping)), collapse = "")
@@ -16,7 +33,7 @@ ggzoom <- function(plotExpr) {
   )
 
   server <- function(input, output, session) {
-    v <- reactiveValues(bounds = NULL)
+    v <- reactiveValues(bounds = NULL, result = NULL)
 
     # Show the plot... that's important.
     output$plot <- renderPlot({
@@ -34,13 +51,23 @@ ggzoom <- function(plotExpr) {
 
     observeEvent(input$brush, {
       bounds <- NULL
+      results <- NULL
       if (!is.null(input$brush$xmin)) {
         bounds <- c(bounds, list(x = c(input$brush$xmin, input$brush$xmax)))
+        if (!is.null(input$brush$mapping$x)) {
+          results <- c(results, list())
+          results[[input$brush$mapping$x]] <- bounds$x
+        }
       }
       if (!is.null(input$brush$ymin)) {
         bounds <- c(bounds, list(y = c(input$brush$ymin, input$brush$ymax)))
+        if (!is.null(input$brush$mapping$y)) {
+          results <- c(results, list())
+          results[[input$brush$mapping$y]] <- bounds$y
+        }
       }
       v$bounds <- bounds
+      v$results <- results
     })
 
     observeEvent(input$reset, {
@@ -73,7 +100,7 @@ ggzoom <- function(plotExpr) {
     # When the Done button is clicked, return the brushed
     # rows to the caller.
     observeEvent(input$done, {
-      stopApp(input$brush)
+      stopApp(v$results)
     })
   }
 
