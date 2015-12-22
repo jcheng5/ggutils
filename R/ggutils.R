@@ -1,4 +1,4 @@
-#' @import ggplot2 shiny
+#' @import ggplot2 shiny shinygadgets
 NULL
 
 #' Zoom in on ggplots
@@ -23,13 +23,18 @@ ggzoom <- function(plotExpr) {
   dimensions <- paste(intersect(c("x", "y"), names(plotExpr$mapping)), collapse = "")
 
   # See below for definition of dialogPage function
-  ui <- dialogPage(
-    plotOutput("plot", height = "100%", # Fill the dialog
-      brush = brushOpts(id = "brush", direction = dimensions,
-        resetOnNew = TRUE
+  ui <- gadgetPage(
+    titlebar("Zoom"),
+    contentPanel(
+      plotOutput("plot", height = "100%", # Fill the dialog
+        brush = brushOpts(id = "brush", direction = dimensions,
+          resetOnNew = TRUE
+        )
       )
     ),
-    statusbar = actionButton("reset", "Unzoom", class = "btn-xs")
+    buttonBlock(
+      actionButton("reset", "Unzoom")
+    )
   )
 
   server <- function(input, output, session) {
@@ -104,7 +109,7 @@ ggzoom <- function(plotExpr) {
     })
   }
 
-  runApp(shinyApp(ui, server), launch.browser = getOption("viewer", TRUE))
+  runGadget(ui, server, viewer = paneViewer())
 }
 
 #' Identify points on a two-dimensional ggplot2
