@@ -8,4 +8,7 @@ Description: Interactive tools for working with ggplots: hover identification,
     subsetting, linked brushing, exclusion.
 License: GPL-3
 LazyData: TRUE
-Imports: ggplot2, shiny (>= 0.12.2.9003)
+Imports:
+    ggplot2,
+    shiny (>= 0.12.2.9003)
+RoxygenNote: 5.0.1

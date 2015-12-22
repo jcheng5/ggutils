@@ -107,11 +107,16 @@ ggzoom <- function(plotExpr) {
   runApp(shinyApp(ui, server), launch.browser = getOption("viewer", TRUE))
 }
 
+#' Identify points on a two-dimensional ggplot2
 #' @export
-gghover <- function(plotExpr) {
+ggidentify <- function(plotExpr, threshold = 5, maxpoints = 1, ...) {
+  if (is.null(plotExpr$mapping$x) || is.null(plotExpr$mapping$y)) {
+    stop("Only 2D plots are currently supported, sorry")
+  }
+
   # See below for definition of dialogPage function
   ui <- dialogPage(
-    plotOutput("plot", hover = "hover", height = "100%")
+    plotOutput("plot", hover = "hover", click = "click", height = "100%")
   )
 
   server <- function(input, output, session) {
@@ -124,7 +129,16 @@ gghover <- function(plotExpr) {
       if (is.null(input$hover))
         return(NULL)
       else
-        nearPoints(plotExpr$data, input$hover, maxpoints = 1)
+        nearPoints(plotExpr$data, input$hover, threshold = threshold,
+          maxpoints = 1)
+    })
+
+    observeEvent(input$click, {
+      pts <- nearPoints(plotExpr$data, input$click,
+        threshold = threshold, maxpoints = maxpoints, ...)
+
+      if (!is.null(pts) && nrow(pts) > 0)
+        stopApp(pts)
     })
 
     # Show a message giving instructions, or showing how many
