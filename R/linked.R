@@ -6,8 +6,8 @@
 #'   iris,
 #'   ggplot(, aes(Sepal.Length, Sepal.Width)) + geom_point(aes(color = selected_)),
 #'   ggplot(, aes(Petal.Length, Petal.Width)) + geom_point(aes(color = selected_)),
-#'   ggplot(, aes(Species)) + geom_histogram(aes(fill = selected_)),
-#'   ggplot(, aes(Species)) + geom_histogram(aes(fill = selected_))
+#'   ggplot(, aes(Species)) + geom_bar(stat = "count", aes(fill = selected_)),
+#'   ggplot(, aes(Species)) + geom_bar(stat = "count", aes(fill = selected_))
 #' )
 #'
 #' gglinked(
@@ -22,47 +22,50 @@ gglinked <- function(df, ...) {
   plots <- list(...)
   nplots <- length(plots)
 
-  if (nplots == 0) {
-    stop("No plots provided")
-  }
-  plotDivs <- lapply(1:nplots, function(n) {
+  plotObj <- function(n) {
     dimensions <- paste(intersect(c("x", "y"), names(plots[[n]]$mapping)), collapse = "")
+    plotOutput(paste0("plot", n), height = "100%",
+      brush = brushOpts("brush", direction = dimensions, fill = "transparent")
+    )
+  }
 
-    tags$div(class = sprintf("plotdiv plotdiv-%d-%d", nplots, n),
-      plotOutput(paste0("plot", n), height = "100%",
-        brush = brushOpts("brush", direction = dimensions, fill = "transparent")
+  plotUI <- if (nplots == 0) {
+    stop("No plots provided")
+  } else if (nplots > 4) {
+    stop("Too many plots provided; limit 4")
+  } else if (nplots == 1) {
+    plotObj(1)
+  } else if (nplots == 2) {
+    fillRow(
+      plotObj(1),
+      plotObj(2)
+    )
+  } else if (nplots == 3) {
+    fillRow(
+      plotObj(1),
+      fillCol(
+        plotObj(2),
+        plotObj(3)
       )
     )
-  })
+  } else if (nplots == 4) {
+    fillCol(
+      fillRow(
+        plotObj(1), plotObj(2)
+      ),
+      fillRow(
+        plotObj(3), plotObj(4)
+      )
+    )
+  }
 
-  ui <- dialogPage(tags$div(class = "plot-container",
-    tags$style(type="text/css", "
-      .recalculating { transition: opacity 250ms ease 1500ms; }
-      .plot-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-      .plotdiv {
-        position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
-      }
-      .plotdiv-1-1 { }
-      .plotdiv-2-1 { right: 50%; }
-      .plotdiv-2-2 { left: 50%; }
-      .plotdiv-3-1 { right: 50%; }
-      .plotdiv-3-2 { left: 50%; bottom: 50%; }
-      .plotdiv-3-3 { left: 50%; top: 50%; }
-      .plotdiv-4-1 { right: 50%; bottom: 50%; }
-      .plotdiv-4-2 { left: 50%; bottom: 50%; }
-      .plotdiv-4-3 { right: 50%; top: 50%; }
-      .plotdiv-4-4 { left: 50%; top: 50%; }
-    "),
-    plotDivs
-  ))
+  ui <- gadgetPage(
+    tags$head(tags$style(type="text/css", ".recalculating { transition: opacity 250ms ease 1500ms; }")),
+    titlebar("Linked brushing"),
+    contentPanel(
+      plotUI
+    )
+  )
 
   server <- function(input, output, session) {
     fortified <- reactive({
@@ -91,5 +94,5 @@ gglinked <- function(df, ...) {
     })
   }
 
-  runApp(shinyApp(ui, server), launch.browser = getOption("viewer", TRUE))
+  runGadget(ui, server)
 }
