@@ -1,14 +1,17 @@
 #' @export
 ggexclude <- function(df, plotExpr) {
 
-  ui <- dialogPage(
-    plotOutput("plot", height = "100%",
-      brush = brushOpts("brush", resetOnNew = TRUE)
+  ui <- gadgetPage(
+    titlebar("Exclude",
+      left = titlebarButton("undo", "Undo")
     ),
-    statusbar = actionButton("undo", "Undo", class = "btn-xs"),
-    buttons = list(
-      actionButton("reset", "Reset", class = "btn-xs"),
-      actionButton("done", "Done", class = "btn-primary btn-xs")
+    contentPanel(
+      plotOutput("plot", height = "100%",
+        brush = brushOpts("brush", resetOnNew = TRUE)
+      )
+    ),
+    buttonBlock(
+      actionButton("reset", "Reset")
     )
   )
 
@@ -52,9 +55,7 @@ ggexclude <- function(df, plotExpr) {
     })
   }
 
-  runApp(shinyApp(ui, server,
-    options = list(launch.browser = getOption("viewer", TRUE))
-  ))
+  runGadget(ui, server)
 }
 
 #' @examples
