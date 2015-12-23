@@ -109,7 +109,7 @@ ggzoom <- function(plotExpr) {
     })
   }
 
-  runGadget(ui, server, viewer = paneViewer())
+  runGadget(ui, server)
 }
 
 #' Identify points on a two-dimensional ggplot2
@@ -120,8 +120,11 @@ ggidentify <- function(plotExpr, threshold = 5, maxpoints = 1, ...) {
   }
 
   # See below for definition of dialogPage function
-  ui <- dialogPage(
-    plotOutput("plot", hover = "hover", click = "click", height = "100%")
+  ui <- gadgetPage(
+    titlebar("Identify"),
+    contentPanel(
+      plotOutput("plot", hover = "hover", click = "click", height = "100%")
+    )
   )
 
   server <- function(input, output, session) {
@@ -168,7 +171,7 @@ ggidentify <- function(plotExpr, threshold = 5, maxpoints = 1, ...) {
     })
   }
 
-  runApp(shinyApp(ui, server), launch.browser = getOption("viewer", TRUE))
+  runGadget(ui, server)
 }
 
 #' Brush ggplot2
@@ -180,9 +183,12 @@ ggbrush <- function(plotExpr) {
   dimensions <- paste(intersect(c("x", "y"), names(plotExpr$mapping)), collapse = "")
 
   # See below for definition of dialogPage function
-  ui <- dialogPage(
-    plotOutput("plot", brush = brushOpts(id = "brush", direction = dimensions),
-      width = "100%", height = "100%" # Fill the dialog
+  ui <- gadgetPage(
+    titlebar("Brush"),
+    contentPanel(
+      plotOutput("plot", brush = brushOpts(id = "brush", direction = dimensions),
+        width = "100%", height = "100%" # Fill the dialog
+      )
     )
   )
 
@@ -219,36 +225,7 @@ ggbrush <- function(plotExpr) {
     })
   }
 
-  runApp(shinyApp(ui, server), launch.browser = getOption("viewer", TRUE))
-}
-
-# Helper function to present Shiny controls in a dialog-like layout
-dialogPage <- function(outputControl, statusbarHeight = 40,
-  statusbar = textOutput("msg", inline = TRUE),
-  buttons = list(
-    actionButton("done", "Done", class = "btn btn-primary btn-xs pull-right")
-  )) {
-  bootstrapPage(
-    tags$style("
-      html, body { width: 100%; height: 100%; overflow: none; }
-      #dialogMainOutput { position: absolute; top: 10px; left: 10px; right: 10px; }
-      #dialogControls {
-        position: absolute; bottom: 0px; left: 0px; right: 0px;
-        padding: 10px 10px 0 10px;
-        background-color: #444; color: white;
-        overflow: hidden;
-      }"
-    ),
-    tags$div(id = "dialogMainOutput",
-      style = sprintf("bottom:%dpx;", statusbarHeight),
-      outputControl
-    ),
-    tags$div(id = "dialogControls",
-      style = sprintf("height:%dpx;", statusbarHeight),
-      statusbar,
-      buttons
-    )
-  )
+  runGadget(ui, server)
 }
 
 #' @examples
