@@ -2,6 +2,8 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(ggplot2)
+#'
 #' gglinked(
 #'   iris,
 #'   ggplot(, aes(Sepal.Length, Sepal.Width)) + geom_point(aes(color = selected_)),
@@ -59,10 +61,10 @@ gglinked <- function(df, ...) {
     )
   }
 
-  ui <- gadgetPage(
+  ui <- miniPage(
     tags$head(tags$style(type="text/css", ".recalculating { transition: opacity 250ms ease 1500ms; }")),
-    titlebar("Linked brushing"),
-    contentPanel(
+    gadgetTitleBar("Linked brushing"),
+    miniContentPanel(padding = 0,
       plotUI
     )
   )
@@ -94,5 +96,5 @@ gglinked <- function(df, ...) {
     })
   }
 
-  runGadget(ui, server)
+  runGadget(ui, server, viewer = dialogViewer("gglinked", 100000, 100000))
 }

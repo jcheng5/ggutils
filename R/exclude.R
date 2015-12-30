@@ -1,16 +1,18 @@
+#' @examples
+#' ggexclude(cars, ggplot(, aes(speed, dist)) + geom_point())
+#'
 #' @export
 ggexclude <- function(df, plotExpr) {
 
-  ui <- gadgetPage(
-    titlebar("Exclude",
-      left = titlebarButton("undo", "Undo")
-    ),
-    contentPanel(
+  ui <- miniPage(
+    gadgetTitleBar("Exclude"),
+    miniContentPanel(
       plotOutput("plot", height = "100%",
         brush = brushOpts("brush", resetOnNew = TRUE)
       )
     ),
-    buttonBlock(
+    miniButtonBlock(
+      actionButton("undo", "Undo"),
       actionButton("reset", "Reset")
     )
   )
@@ -57,7 +59,3 @@ ggexclude <- function(df, plotExpr) {
 
   runGadget(ui, server)
 }
-
-#' @examples
-#' ggexclude(cars, ggplot(, aes(speed, dist)) + geom_point())
-#'

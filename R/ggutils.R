@@ -1,4 +1,4 @@
-#' @import ggplot2 shiny shinygadgets
+#' @import ggplot2 shiny miniUI
 NULL
 
 #' Zoom in on ggplots
@@ -23,16 +23,16 @@ ggzoom <- function(plotExpr) {
   dimensions <- paste(intersect(c("x", "y"), names(plotExpr$mapping)), collapse = "")
 
   # See below for definition of dialogPage function
-  ui <- gadgetPage(
-    titlebar("Zoom"),
-    contentPanel(
+  ui <- miniPage(
+    gadgetTitleBar("Zoom"),
+    miniContentPanel(padding = 0,
       plotOutput("plot", height = "100%", # Fill the dialog
         brush = brushOpts(id = "brush", direction = dimensions,
           resetOnNew = TRUE
         )
       )
     ),
-    buttonBlock(
+    miniButtonBlock(
       actionButton("reset", "Unzoom")
     )
   )
@@ -120,9 +120,9 @@ ggidentify <- function(plotExpr, threshold = 5, maxpoints = 1, ...) {
   }
 
   # See below for definition of dialogPage function
-  ui <- gadgetPage(
-    titlebar("Identify"),
-    contentPanel(
+  ui <- miniPage(
+    gadgetTitleBar("Identify"),
+    miniContentPanel(padding = 0,
       plotOutput("plot", hover = "hover", click = "click", height = "100%")
     )
   )
@@ -183,9 +183,9 @@ ggbrush <- function(plotExpr) {
   dimensions <- paste(intersect(c("x", "y"), names(plotExpr$mapping)), collapse = "")
 
   # See below for definition of dialogPage function
-  ui <- gadgetPage(
-    titlebar("Brush"),
-    contentPanel(
+  ui <- miniPage(
+    gadgetTitleBar("Brush"),
+    miniContentPanel(
       plotOutput("plot", brush = brushOpts(id = "brush", direction = dimensions),
         width = "100%", height = "100%" # Fill the dialog
       )

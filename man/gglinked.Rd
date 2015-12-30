@@ -11,12 +11,14 @@ Linked display of multiple ggplot objects
 }
 \examples{
 \dontrun{
+library(ggplot2)
+
 gglinked(
   iris,
   ggplot(, aes(Sepal.Length, Sepal.Width)) + geom_point(aes(color = selected_)),
   ggplot(, aes(Petal.Length, Petal.Width)) + geom_point(aes(color = selected_)),
-  ggplot(, aes(Species)) + geom_histogram(aes(fill = selected_)),
-  ggplot(, aes(Species)) + geom_histogram(aes(fill = selected_))
+  ggplot(, aes(Species)) + geom_bar(stat = "count", aes(fill = selected_)),
+  ggplot(, aes(Species)) + geom_bar(stat = "count", aes(fill = selected_))
 )
 
 gglinked(

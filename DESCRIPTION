@@ -11,5 +11,5 @@ LazyData: TRUE
 Imports:
     ggplot2,
     shiny (>= 0.12.2.9003),
-    shinygadgets
+    miniUI
 RoxygenNote: 5.0.1
